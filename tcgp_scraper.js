@@ -62,5 +62,6 @@ const puppeteer = require("puppeteer");
   }
 
   console.log("✅ listing found:", allListings);
+  console.log("✅ foo:");
   await browser.close();
 })();
