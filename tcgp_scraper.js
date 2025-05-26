@@ -16,9 +16,12 @@ const puppeteer = require("puppeteer");
   ];
 
   let allListings = [];
-
+  //https://www.tcgplayer.com/product/610359/pokemon-sv-prismatic-evolutions-pokemon?seller=9aad7cfd&page=1&Language=English
   for (const url of pagesToScrape) {
-    const match = url.match(/pokemon-japan-(.+?)\?page/);
+    let match = url.match(/product\/([^\/]+)-pokemon/);
+    if (!match) {
+      match = url.match(/pokemon-japan-(.+?)\?page/);
+    }
     const currentPokemon = match ? match[1] : null;
 
     await page.goto(url, { waitUntil: "networkidle2" });
@@ -64,7 +67,6 @@ const puppeteer = require("puppeteer");
             setTimeout(() => reject(new Error("⏱️ Navigation timeout")), 5000)
           ),
         ]);
-        // Optional: add a short buffer wait to ensure DOM content is stable
         await new Promise((resolve) => setTimeout(resolve, 1000));
       } catch (err) {
         console.warn(err.message);
@@ -74,20 +76,46 @@ const puppeteer = require("puppeteer");
     }
   }
 
-  // console.log("✅ listing found:", find);
   await browser.close();
 
   const findVendorsInMultipleCards = (allListings) => {
-    const sellerMap = allListings.reduce((map, { seller, pokemonValue }) => {
-      map[seller] = map[seller] || new Set();
-      map[seller].add(pokemonValue);
-      return map;
-    }, {});
+    const sellerMap = allListings.reduce(
+      (map, { seller, pokemonValue, price }) => {
+        if (!map[seller]) {
+          map[seller] = {
+            cards: new Set(),
+            prices: [],
+          };
+        }
+        map[seller].cards.add(pokemonValue);
+        map[seller].prices.push(
+          parseFloat(price?.startsWith("$") ? price.slice(1) : price) || 0
+        );
+
+        return map;
+      },
+      {}
+    );
 
     return Object.entries(sellerMap)
-      .filter(([_, cards]) => cards.size > 1)
-      .map(([seller, cards]) => ({ seller, cards: Array.from(cards) }));
+      .filter(([_, data]) => data.cards.size > 1)
+      .map(([seller, data]) => ({
+        seller,
+        cards: Array.from(data.cards),
+        prices: data.prices,
+      }));
   };
 
-  console.log("vendor matches: ", findVendorsInMultipleCards(allListings));
+  const vendorsWithTotals = findVendorsInMultipleCards(allListings).map(
+    (vendor) => {
+      const totalPrice = vendor.prices.reduce((sum, price) => sum + price, 0);
+      return { ...vendor, totalPrice };
+    }
+  );
+
+  vendorsWithTotals.sort((a, b) => a.totalPrice - b.totalPrice);
+
+  const top5AffordableVendors = vendorsWithTotals.slice(0, 5);
+
+  console.log("Most affordable vendors: ", top5AffordableVendors);
 })();
