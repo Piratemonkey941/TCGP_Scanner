@@ -55,7 +55,7 @@ import fs from "fs";
       );
 
       allListings.push(...listings);
-      
+
       pages++;
 
       console.log(`✅ Got ${listings.length} listings from page ${pages}`);
@@ -64,6 +64,7 @@ import fs from "fs";
 
       console.log("👉 Moving to next page...");
 
+      //maybe small time delay here, race condition?
       await nextButton.click();
 
       try {
@@ -75,6 +76,7 @@ import fs from "fs";
         ]);
         await new Promise((resolve) => setTimeout(resolve, 1000));
       } catch (err) {
+        //retry somewhere in here?
         console.warn(err.message);
         console.warn("⚠️ Assuming no more pages. Exiting loop.");
         break;
@@ -150,3 +152,20 @@ import fs from "fs";
     top5AffordableVendors
   );
 })();
+
+/*ideas for improvement
+  1. check Db before scraping for that entree
+  2. send scraped array to DB 
+
+  if entree exists it will need to be fetch 
+  entree will contain all vendors so anything new will be compared against it
+
+  need to build in redundancy for scraping
+
+  simple webapp for usability
+
+  way of removing vendors/user reporting and rerunning script
+  use vendor name to ping tcgplayer to see if vendor has items?
+
+
+*/
