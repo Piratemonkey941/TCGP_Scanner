@@ -1,7 +1,8 @@
 import puppeteer from "puppeteer";
 import fs from "fs";
 // import { sellerMapEntrees } from "./sellerMapEntrees.mjs";
-
+// import { foo } from "./sellerMapEntrees___.mjs";
+// import { match } from "assert";
 (async () => {
   console.log("Launching Browser...");
   const browser = await puppeteer.launch({ headless: "new" });
@@ -13,20 +14,29 @@ import fs from "fs";
   );
 
   // Put links to TCGP cards here
+  // English card links
   const pagesToScrape = [
-    "https://www.tcgplayer.com/product/566515/pokemon-japan-sv2a-pokemon-card-151-squirtle-170-165?page=1&Language=all",
-    "https://www.tcgplayer.com/product/566516/pokemon-japan-sv2a-pokemon-card-151-wartortle-171-165?page=1&Language=all",
-    "https://www.tcgplayer.com/product/566511/pokemon-japan-sv2a-pokemon-card-151-bulbasaur-166-165?page=1&Language=all",
-    "https://www.tcgplayer.com/product/566512/pokemon-japan-sv2a-pokemon-card-151-ivysaur-167-165?page=1&Language=all",
+    "https://www.tcgplayer.com/product/502549/pokemon-sv-scarlet-and-violet-151-squirtle-170-165?page=1&Language=English",
   ];
 
-  let allListings = [];
-  for (const url of pagesToScrape) {
-    let match = url.match(/product\/([^\/]+)-pokemon/);
+  //Japanese card links
+  // const pagesToScrape = [
+  //   "https://www.tcgplayer.com/product/566512/pokemon-japan-sv2a-pokemon-card-151-ivysaur-167-165?page=1&Language=all",
+  // ];
+
+  const urlMatcher = (url) => {
+    const match = url.match(/\/pokemon-sv-[^\/]*-([a-z]+)-\d+-\d+\?/i);
     if (!match) {
       match = url.match(/pokemon-japan-(.+?)\?page/);
     }
-    const currentPokemon = match ? match[1] : null;
+    return match;
+  };
+
+  let allListings = [];
+  for (const url of pagesToScrape) {
+    let matchedURL = urlMatcher(url);
+    console.log(matchedURL);
+    const currentPokemon = matchedURL ? matchedURL[1] : null;
 
     await page.goto(url, { waitUntil: "networkidle2" });
 
@@ -84,7 +94,25 @@ import fs from "fs";
     }
   }
 
+  const fileNameArray = pagesToScrape.map((url) => urlMatcher(url));
+
+  const fileName = fileNameArray.join("_");
+  //turn no to get all listings
+  // fs.writeFile(
+  //   `sellerMapEntrees_${fileName}.json`,
+  //   JSON.stringify(allListings, null, 2),
+  //   (err) => {
+  //     if (err) {
+  //       console.error("Error writing seller map entrees", err);
+  //     } else {
+  //       console.log("seller map entrees saved!");
+  //     }
+  //   }
+  // );
+
   await browser.close();
+
+  // const allListings = foo;
 
   const findVendorsInMultipleCards = (allListings) => {
     const sellerMap = allListings.reduce(
@@ -113,7 +141,8 @@ import fs from "fs";
         prices: data.prices,
       }));
 
-    // Turn on if you want to harvest data
+    // Turn on if you want to harvest data where push to DB would happen
+    // if conditional is false
     // fs.writeFile(
     //   "sellerMapEntrees.json",
     //   JSON.stringify(sellerMapEntrees, null, 2),
@@ -142,6 +171,7 @@ import fs from "fs";
 
     if (vendorsWithTotals.length > 0) break;
   }
+  console.log("allListings", findVendorsInMultipleCards(allListings));
 
   vendorsWithTotals.sort((a, b) => a.totalPrice - b.totalPrice);
 
