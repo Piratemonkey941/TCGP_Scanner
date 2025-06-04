@@ -1,41 +1,46 @@
 import puppeteer from "puppeteer";
 import fs from "fs";
-// import { sellerMapEntrees } from "./sellerMapEntrees.mjs";
-// import { foo } from "./sellerMapEntrees___.mjs";
-// import { match } from "assert";
+
 (async () => {
   console.log("Launching Browser...");
   const browser = await puppeteer.launch({ headless: "new" });
   const page = await browser.newPage();
-  // const fs = require("fs");
 
   await page.setUserAgent(
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
   );
 
   // Put links to TCGP cards here
-  // English card links
   const pagesToScrape = [
-    "https://www.tcgplayer.com/product/502549/pokemon-sv-scarlet-and-violet-151-squirtle-170-165?page=1&Language=English",
+    "https://www.tcgplayer.com/product/623509/pokemon-sv09-journey-together-regirock?Printing=Reverse+Holofoil&irclickid=x5RwjwVcOxyKRzsyqkxJB3g3UksQBZUVQwfzRM0&sharedid=&irpid=4915895&irgwc=1&utm_source=impact&utm_medium=affiliate&utm_campaign=TCG+Collector&Language=English&page=1",
+    "https://www.tcgplayer.com/product/623494/pokemon-sv09-journey-together-lillies-ribombee-067-159?Printing=Reverse+Holofoil&irclickid=x5RwjwVcOxyKRzsyqkxJB3g3UksQBZVpQwfzRM0&sharedid=&irpid=4915895&irgwc=1&utm_source=impact&utm_medium=affiliate&utm_campaign=TCG+Collector&Language=English",
+    //  "",
   ];
 
-  //Japanese card links
-  // const pagesToScrape = [
-  //   "https://www.tcgplayer.com/product/566512/pokemon-japan-sv2a-pokemon-card-151-ivysaur-167-165?page=1&Language=all",
-  // ];
+  let pokemonSearchedFor = [];
 
+  //Url regex
   const urlMatcher = (url) => {
-    const match = url.match(/\/pokemon-sv-[^\/]*-([a-z]+)-\d+-\d+\?/i);
+    let match = url.match(/\/pokemon-sv-[^\/]*-([a-z]+)-\d+-\d+\?/i);
     if (!match) {
       match = url.match(/pokemon-japan-(.+?)\?page/);
     }
+    if (!match) {
+      match = url.match(/\/pokemon-japan-[^\/]+\/([^\/?]+)/i); // fallback if structure is different
+    }
+    if (!match) {
+      match = url.match(/\/product\/\d+\/([^\/?]+)/i); // New matcher for your example URL
+    }
+
+    pokemonSearchedFor.push(match[1]);
     return match;
   };
 
   let allListings = [];
+
+  //Scraper Loop
   for (const url of pagesToScrape) {
     let matchedURL = urlMatcher(url);
-    console.log(matchedURL);
     const currentPokemon = matchedURL ? matchedURL[1] : null;
 
     await page.goto(url, { waitUntil: "networkidle2" });
@@ -94,26 +99,30 @@ import fs from "fs";
     }
   }
 
-  const fileNameArray = pagesToScrape.map((url) => urlMatcher(url));
+  // For Naming of file
+  const cleanedPokemonNamed = pokemonSearchedFor.map((pkmn) =>
+    pkmn.split("-").slice(4).join("-")
+  );
+  const searchedForFileName = cleanedPokemonNamed.join("");
 
-  const fileName = fileNameArray.join("_");
-  //turn no to get all listings
-  // fs.writeFile(
-  //   `sellerMapEntrees_${fileName}.json`,
-  //   JSON.stringify(allListings, null, 2),
-  //   (err) => {
-  //     if (err) {
-  //       console.error("Error writing seller map entrees", err);
-  //     } else {
-  //       console.log("seller map entrees saved!");
-  //     }
-  //   }
-  // );
+  //Creates .json file from listings
+  console.log("ALL LISTINGS: ", allListings);
+  fs.writeFile(
+    `sellerMapEntrees_${searchedForFileName}.json`,
+    JSON.stringify(allListings, null, 2),
+    (err) => {
+      if (err) {
+        console.error("Error writing seller map entrees", err);
+      } else {
+        console.log("seller map entrees saved!");
+      }
+    }
+  );
 
   await browser.close();
+  // end of scraping process
 
-  // const allListings = foo;
-
+  //Vendor finding logic for looked for cards
   const findVendorsInMultipleCards = (allListings) => {
     const sellerMap = allListings.reduce(
       (map, { seller, pokemonValue, price }) => {
@@ -171,7 +180,6 @@ import fs from "fs";
 
     if (vendorsWithTotals.length > 0) break;
   }
-  console.log("allListings", findVendorsInMultipleCards(allListings));
 
   vendorsWithTotals.sort((a, b) => a.totalPrice - b.totalPrice);
 
