@@ -1,5 +1,6 @@
 import puppeteer from "puppeteer";
 import fs from "fs";
+import { searchedForFileName } from "./tcg_helpers.mjs";
 
 (async () => {
   console.log("Launching Browser...");
@@ -12,14 +13,14 @@ import fs from "fs";
 
   // Put links to TCGP cards here
   const pagesToScrape = [
-    "https://www.tcgplayer.com/product/623509/pokemon-sv09-journey-together-regirock?Printing=Reverse+Holofoil&irclickid=x5RwjwVcOxyKRzsyqkxJB3g3UksQBZUVQwfzRM0&sharedid=&irpid=4915895&irgwc=1&utm_source=impact&utm_medium=affiliate&utm_campaign=TCG+Collector&Language=English&page=1",
-    "https://www.tcgplayer.com/product/623494/pokemon-sv09-journey-together-lillies-ribombee-067-159?Printing=Reverse+Holofoil&irclickid=x5RwjwVcOxyKRzsyqkxJB3g3UksQBZVpQwfzRM0&sharedid=&irpid=4915895&irgwc=1&utm_source=impact&utm_medium=affiliate&utm_campaign=TCG+Collector&Language=English",
+    "https://www.tcgplayer.com/product/589983/pokemon-sv08-surging-sparks-latias-ex-076-191?Printing=Holofoil&irclickid=x5RwjwVcOxyKRzsyqkxJB3g3UksQr61RQwfzRM0&sharedid=&irpid=4915895&irgwc=1&utm_source=impact&utm_medium=affiliate&utm_campaign=TCG+Collector&Language=English",
+    "https://www.tcgplayer.com/product/509980/pokemon-sv03-obsidian-flames-charizard-ex-223-197?page=1&Language=English",
     //  "",
   ];
 
   let pokemonSearchedFor = [];
 
-  //Url regex
+  //Url regex  HELPER?
   const urlMatcher = (url) => {
     let match = url.match(/\/pokemon-sv-[^\/]*-([a-z]+)-\d+-\d+\?/i);
     if (!match) {
@@ -36,10 +37,9 @@ import fs from "fs";
     return match;
   };
 
-  let allListings = [];
-
   //Scraper Loop
   for (const url of pagesToScrape) {
+    let allListings = [];
     let matchedURL = urlMatcher(url);
     const currentPokemon = matchedURL ? matchedURL[1] : null;
 
@@ -48,6 +48,10 @@ import fs from "fs";
     let pages = 0;
 
     while (true) {
+      setTimeout(() => {
+        console.log("Letting Page Load.");
+      }, "1000");
+
       await page.waitForSelector(".product-details__listings-results");
 
       const listings = await page.$$eval(
@@ -75,9 +79,8 @@ import fs from "fs";
 
       console.log(`✅ Got ${listings.length} listings from page ${pages}`);
 
-      const nextButton = await page.$('[aria-label="Next page"]');
-
       console.log("👉 Moving to next page...");
+      const nextButton = await page.$('[aria-label="Next page"]');
 
       //maybe small time delay here, race condition?
       await nextButton.click();
@@ -97,27 +100,30 @@ import fs from "fs";
         break;
       }
     }
+
+    // console.log("currentPokemon: ", currentPokemon);
+
+    const fileName = searchedForFileName(currentPokemon);
+
+    // push to DB here currently being sent to files
+    saveSellerMapEntries(fileName, allListings);
   }
 
-  // For Naming of file
-  const cleanedPokemonNamed = pokemonSearchedFor.map((pkmn) =>
-    pkmn.split("-").slice(4).join("-")
-  );
-  const searchedForFileName = cleanedPokemonNamed.join("");
-
-  //Creates .json file from listings
-  console.log("ALL LISTINGS: ", allListings);
-  fs.writeFile(
-    `sellerMapEntrees_${searchedForFileName}.json`,
-    JSON.stringify(allListings, null, 2),
-    (err) => {
-      if (err) {
-        console.error("Error writing seller map entrees", err);
-      } else {
-        console.log("seller map entrees saved!");
+  //Creates .json file from listings HELPER?
+  function saveSellerMapEntries(searchedForFileName, allListings) {
+    console.log("ALL LISTINGS: ", allListings, allListings.length); // hit here from main function
+    fs.writeFile(
+      `sellerMapEntrees_${searchedForFileName}.json`,
+      JSON.stringify(allListings, null, 2),
+      (err) => {
+        if (err) {
+          console.error("Error writing seller map entrees", err);
+        } else {
+          console.log("seller map entrees saved!");
+        }
       }
-    }
-  );
+    );
+  }
 
   await browser.close();
   // end of scraping process
@@ -149,20 +155,6 @@ import fs from "fs";
         cards: Array.from(data.cards),
         prices: data.prices,
       }));
-
-    // Turn on if you want to harvest data where push to DB would happen
-    // if conditional is false
-    // fs.writeFile(
-    //   "sellerMapEntrees.json",
-    //   JSON.stringify(sellerMapEntrees, null, 2),
-    //   (err) => {
-    //     if (err) {
-    //       console.error("Error writing seller map entrees", err);
-    //     } else {
-    //       console.log("seller map entrees saved!");
-    //     }
-    //   }
-    // );
 
     return sellerMapEntrees;
   };
@@ -205,5 +197,6 @@ import fs from "fs";
   way of removing vendors/user reporting and rerunning script
   use vendor name to ping tcgplayer to see if vendor has items?
 
+  if a set can be found remove those from list and scan through with smaller set and provide additional set 
 
 */
