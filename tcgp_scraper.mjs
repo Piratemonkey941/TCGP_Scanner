@@ -1,6 +1,9 @@
 import puppeteer from "puppeteer";
-import fs from "fs";
-import { searchedForFileName } from "./tcg_helpers.mjs";
+import {
+  searchedForFileName,
+  saveSellerMapEntries,
+  urlMatcher,
+} from "./tcg_helpers.mjs";
 
 (async () => {
   console.log("Launching Browser...");
@@ -17,25 +20,6 @@ import { searchedForFileName } from "./tcg_helpers.mjs";
     "https://www.tcgplayer.com/product/509980/pokemon-sv03-obsidian-flames-charizard-ex-223-197?page=1&Language=English",
     //  "",
   ];
-
-  let pokemonSearchedFor = [];
-
-  //Url regex  HELPER?
-  const urlMatcher = (url) => {
-    let match = url.match(/\/pokemon-sv-[^\/]*-([a-z]+)-\d+-\d+\?/i);
-    if (!match) {
-      match = url.match(/pokemon-japan-(.+?)\?page/);
-    }
-    if (!match) {
-      match = url.match(/\/pokemon-japan-[^\/]+\/([^\/?]+)/i); // fallback if structure is different
-    }
-    if (!match) {
-      match = url.match(/\/product\/\d+\/([^\/?]+)/i); // New matcher for your example URL
-    }
-
-    pokemonSearchedFor.push(match[1]);
-    return match;
-  };
 
   //Scraper Loop
   for (const url of pagesToScrape) {
@@ -108,79 +92,10 @@ import { searchedForFileName } from "./tcg_helpers.mjs";
     // push to DB here currently being sent to files
     saveSellerMapEntries(fileName, allListings);
   }
-
-  //Creates .json file from listings HELPER?
-  function saveSellerMapEntries(searchedForFileName, allListings) {
-    console.log("ALL LISTINGS: ", allListings, allListings.length); // hit here from main function
-    fs.writeFile(
-      `sellerMapEntrees_${searchedForFileName}.json`,
-      JSON.stringify(allListings, null, 2),
-      (err) => {
-        if (err) {
-          console.error("Error writing seller map entrees", err);
-        } else {
-          console.log("seller map entrees saved!");
-        }
-      }
-    );
-  }
+  saveSellerMapEntries(searchedForFileName, allListings);
 
   await browser.close();
   // end of scraping process
-
-  //Vendor finding logic for looked for cards
-  const findVendorsInMultipleCards = (allListings) => {
-    const sellerMap = allListings.reduce(
-      (map, { seller, pokemonValue, price }) => {
-        if (!map[seller]) {
-          map[seller] = {
-            cards: new Set(),
-            prices: [],
-          };
-        }
-        map[seller].cards.add(pokemonValue);
-        map[seller].prices.push(
-          parseFloat(price?.startsWith("$") ? price.slice(1) : price) || 0
-        );
-
-        return map;
-      },
-      {}
-    );
-
-    const sellerMapEntrees = Object.entries(sellerMap)
-      .filter(([_, data]) => data.cards.size > 1)
-      .map(([seller, data]) => ({
-        seller,
-        cards: Array.from(data.cards),
-        prices: data.prices,
-      }));
-
-    return sellerMapEntrees;
-  };
-
-  let vendorsWithTotals = [];
-
-  for (let count = pagesToScrape.length; count > 0; count--) {
-    // vendorsWithTotals = sellerMapEntrees //if you want to test locally
-    vendorsWithTotals = findVendorsInMultipleCards(allListings)
-      .filter((vendor) => vendor.cards.length >= count)
-      .map((vendor) => ({
-        ...vendor,
-        totalPrice: vendor.prices.reduce((sum, price) => sum + price, 0),
-      }));
-
-    if (vendorsWithTotals.length > 0) break;
-  }
-
-  vendorsWithTotals.sort((a, b) => a.totalPrice - b.totalPrice);
-
-  const top5AffordableVendors = vendorsWithTotals.slice(0, 5);
-
-  console.log(
-    "Most affordable vendors for these items: ",
-    top5AffordableVendors
-  );
 })();
 
 /*ideas for improvement
