@@ -17,17 +17,24 @@ import {
 
   // Put links to TCGP cards here, iuse shift option to add more lines.
   const pagesToScrape = [
-    // "https://www.tcgplayer.com/product/509919/pokemon-sv03-obsidian-flames-scizor?Printing=Reverse+Holofoil&irclickid=x5RwjwVcOxyKRzsyqkxJB3g3UksQK9woEUvRww0&sharedid=&irpid=4915895&irgwc=1&utm_source=impact&utm_medium=affiliate&utm_campaign=TCG+Collector&Language=English",
-    // "https://www.tcgplayer.com/product/623454/pokemon-sv09-journey-together-ns-darmanitan-027-159?Printing=Reverse+Holofoil&irclickid=x5RwjwVcOxyKRzsyqkxJB3g3UksQK4SYEUvRww0&sharedid=&irpid=4915895&irgwc=1&utm_source=impact&utm_medium=affiliate&utm_campaign=TCG+Collector&Language=English",
-    // "https://www.tcgplayer.com/product/623494/pokemon-sv09-journey-together-lillies-ribombee-067-159?Printing=Reverse+Holofoil&irclickid=x5RwjwVcOxyKRzsyqkxJB3g3UksQK90sEUvRww0&sharedid=&irpid=4915895&irgwc=1&utm_source=impact&utm_medium=affiliate&utm_campaign=TCG+Collector&Language=English",
-    // "https://www.tcgplayer.com/product/623583/pokemon-sv09-journey-together-redeemable-ticket?Printing=Reverse+Holofoil&irclickid=x5RwjwVcOxyKRzsyqkxJB3g3UksQK90IEUvRww0&sharedid=&irpid=4915895&irgwc=1&utm_source=impact&utm_medium=affiliate&utm_campaign=TCG+Collector&Language=English",
-    // "https://www.tcgplayer.com/product/623585/pokemon-sv09-journey-together-super-potion?Printing=Reverse+Holofoil&irclickid=x5RwjwVcOxyKRzsyqkxJB3g3UksQK908EUvRww0&sharedid=&irpid=4915895&irgwc=1&utm_source=impact&utm_medium=affiliate&utm_campaign=TCG+Collector&Language=English",
-    // "https://www.tcgplayer.com/product/623586/pokemon-sv09-journey-together-spiky-energy-159-159?Printing=Reverse+Holofoil&irclickid=x5RwjwVcOxyKRzsyqkxJB3g3UksQK9xUEUvRww0&sharedid=&irpid=4915895&irgwc=1&utm_source=impact&utm_medium=affiliate&utm_campaign=TCG+Collector&Language=English",
-    // "https://www.tcgplayer.com/product/610399/pokemon-sv-prismatic-evolutions-munkidori?Printing=Reverse+Holofoil&irclickid=x5RwjwVcOxyKRzsyqkxJB3g3UksQK9zwEUvRww0&sharedid=&irpid=4915895&irgwc=1&utm_source=impact&utm_medium=affiliate&utm_campaign=TCG+Collector&Language=English",
-    // "https://www.tcgplayer.com/product/610468/pokemon-sv-prismatic-evolutions-kieran-113-131?Printing=Reverse+Holofoil&irclickid=x5RwjwVcOxyKRzsyqkxJB3g3UksQK9zkEUvRww0&sharedid=&irpid=4915895&irgwc=1&utm_source=impact&utm_medium=affiliate&utm_campaign=TCG+Collector&Language=English",
-    // "https://www.tcgplayer.com/product/542651/pokemon-sv05-temporal-forces-ancient-booster-energy-capsule?Printing=Normal&irclickid=x5RwjwVcOxyKRzsyqkxJB3g3UksQK9wwEUvRww0&sharedid=&irpid=4915895&irgwc=1&utm_source=impact&utm_medium=affiliate&utm_campaign=TCG+Collector&Language=English",
-    // "https://www.tcgplayer.com/product/523615/pokemon-sv04-paradox-rift-toedscool-015-182?Printing=Reverse+Holofoil&irclickid=x5RwjwVcOxyKRzsyqkxJB3g3UksQK9wkEUvRww0&sharedid=&irpid=4915895&irgwc=1&utm_source=impact&utm_medium=affiliate&utm_campaign=TCG+Collector&Language=English",
-    "https://www.tcgplayer.com/product/542651/pokemon-sv05-temporal-forces-ancient-booster-energy-capsule?irclickid=x5RwjwVcOxyKRzsyqkxJB3g3UksQK9wwEUvRww0&sharedid=&irpid=4915895&irgwc=1&utm_source=impact&utm_medium=affiliate&utm_campaign=TCG+Collector&Language=English&page=1&Printing=Reverse+Holofoil",
+    "https://www.tcgplayer.com/product/632914/pokemon-sv10-destined-rivals-hippowdon?Printing=Reverse+Holofoil&irclickid=x5RwjwVcOxyKRzsyqkxJB3g3UksQYd3dQwfzRM0&sharedid=&irpid=4915895&irgwc=1&utm_source=impact&utm_medium=affiliate&utm_campaign=TCG+Collector&Language=English",
+    "https://www.tcgplayer.com/product/632940/pokemon-sv10-destined-rivals-marnies-scraggy?Printing=Reverse+Holofoil&irclickid=x5RwjwVcOxyKRzsyqkxJB3g3UksQYdyRQwfzRM0&sharedid=&irpid=4915895&irgwc=1&utm_source=impact&utm_medium=affiliate&utm_campaign=TCG+Collector&Language=English",
+    "https://www.tcgplayer.com/product/632940/pokemon-sv10-destined-rivals-marnies-scraggy?Printing=Reverse+Holofoil&irclickid=x5RwjwVcOxyKRzsyqkxJB3g3UksQYdVRQwfzRM0&sharedid=&irpid=4915895&irgwc=1&utm_source=impact&utm_medium=affiliate&utm_campaign=TCG+Collector&Language=English",
+    "https://www.tcgplayer.com/product/632941/pokemon-sv10-destined-rivals-marnies-scrafty?Printing=Reverse+Holofoil&irclickid=x5RwjwVcOxyKRzsyqkxJB3g3UksQYdVBQwfzRM0&sharedid=&irpid=4915895&irgwc=1&utm_source=impact&utm_medium=affiliate&utm_campaign=TCG+Collector&Language=English",
+    "https://www.tcgplayer.com/product/632942/pokemon-sv10-destined-rivals-marnies-impidimp?Printing=Reverse+Holofoil&irclickid=x5RwjwVcOxyKRzsyqkxJB3g3UksQYdVtQwfzRM0&sharedid=&irpid=4915895&irgwc=1&utm_source=impact&utm_medium=affiliate&utm_campaign=TCG+Collector&Language=English",
+    "https://www.tcgplayer.com/product/632943/pokemon-sv10-destined-rivals-marnies-morgrem?Printing=Reverse+Holofoil&irclickid=x5RwjwVcOxyKRzsyqkxJB3g3UksQYdVNQwfzRM0&sharedid=&irpid=4915895&irgwc=1&utm_source=impact&utm_medium=affiliate&utm_campaign=TCG+Collector&Language=English",
+    "https://www.tcgplayer.com/product/632952/pokemon-sv10-destined-rivals-zamazenta-146-182?Printing=Reverse+Holofoil&irclickid=x5RwjwVcOxyKRzsyqkxJB3g3UksQYfzxQwfzRM0&sharedid=&irpid=4915895&irgwc=1&utm_source=impact&utm_medium=affiliate&utm_campaign=TCG+Collector&Language=English",
+    "https://www.tcgplayer.com/product/630830/pokemon-sv10-destined-rivals-team-rockets-giovanni?Printing=Reverse+Holofoil&irclickid=x5RwjwVcOxyKRzsyqkxJB3g3UksQYfzFQwfzRM0&sharedid=&irpid=4915895&irgwc=1&utm_source=impact&utm_medium=affiliate&utm_campaign=TCG+Collector&Language=English",
+    "https://www.tcgplayer.com/product/632977/pokemon-sv10-destined-rivals-team-rockets-proton-177-182?Printing=Reverse+Holofoil&irclickid=x5RwjwVcOxyKRzsyqkxJB3g3UksQYfzJQwfzRM0&sharedid=&irpid=4915895&irgwc=1&utm_source=impact&utm_medium=affiliate&utm_campaign=TCG+Collector&Language=English",
+    "https://www.tcgplayer.com/product/632979/pokemon-sv10-destined-rivals-team-rockets-venture-bomb?Printing=Reverse+Holofoil&irclickid=x5RwjwVcOxyKRzsyqkxJB3g3UksQYfzdQwfzRM0&sharedid=&irpid=4915895&irgwc=1&utm_source=impact&utm_medium=affiliate&utm_campaign=TCG+Collector&Language=English",
+    "https://www.tcgplayer.com/product/632980/pokemon-sv10-destined-rivals-team-rockets-watchtower?Printing=Reverse+Holofoil&irclickid=x5RwjwVcOxyKRzsyqkxJB3g3UksQYfwxQwfzRM0&sharedid=&irpid=4915895&irgwc=1&utm_source=impact&utm_medium=affiliate&utm_campaign=TCG+Collector&Language=English",
+    "https://www.tcgplayer.com/product/632981/pokemon-sv10-destined-rivals-tm-machine?Printing=Reverse+Holofoil&irclickid=x5RwjwVcOxyKRzsyqkxJB3g3UksQYfwhQwfzRM0&sharedid=&irpid=4915895&irgwc=1&utm_source=impact&utm_medium=affiliate&utm_campaign=TCG+Collector&Language=English",
+    "https://www.tcgplayer.com/product/632982/pokemon-sv10-destined-rivals-team-rockets-energy?Printing=Reverse+Holofoil&irclickid=x5RwjwVcOxyKRzsyqkxJB3g3UksQYfwFQwfzRM0&sharedid=&irpid=4915895&irgwc=1&utm_source=impact&utm_medium=affiliate&utm_campaign=TCG+Collector&Language=English",
+    "https://www.tcgplayer.com/product/560372/pokemon-sv-shrouded-fable-night-stretcher?Printing=Reverse+Holofoil&irclickid=x5RwjwVcOxyKRzsyqkxJB3g3UksQYfwdQwfzRM0&sharedid=&irpid=4915895&irgwc=1&utm_source=impact&utm_medium=affiliate&utm_campaign=TCG+Collector&Language=English",
+    "https://www.tcgplayer.com/product/523841/pokemon-sv04-paradox-rift-counter-catcher?Printing=Reverse+Holofoil&irclickid=x5RwjwVcOxyKRzsyqkxJB3g3UksQYf1xQwfzRM0&sharedid=&irpid=4915895&irgwc=1&utm_source=impact&utm_medium=affiliate&utm_campaign=TCG+Collector&Language=English",
+    "https://www.tcgplayer.com/product/509778/pokemon-sv03-obsidian-flames-arven?Printing=Reverse+Holofoil&irclickid=x5RwjwVcOxyKRzsyqkxJB3g3UksQYf1pQwfzRM0&sharedid=&irpid=4915895&irgwc=1&utm_source=impact&utm_medium=affiliate&utm_campaign=TCG+Collector&Language=English",
+    "https://www.tcgplayer.com/product/509778/pokemon-sv03-obsidian-flames-arven?Printing=Reverse+Holofoil&irclickid=x5RwjwVcOxyKRzsyqkxJB3g3UksQYf3tQwfzRM0&sharedid=&irpid=4915895&irgwc=1&utm_source=impact&utm_medium=affiliate&utm_campaign=TCG+Collector&Language=English",
+    "https://www.tcgplayer.com/product/488071/pokemon-sv01-scarlet-and-violet-base-set-arven-166-198?Printing=Reverse+Holofoil&irclickid=x5RwjwVcOxyKRzsyqkxJB3g3UksQYf35QwfzRM0&sharedid=&irpid=4915895&irgwc=1&utm_source=impact&utm_medium=affiliate&utm_campaign=TCG+Collector&Language=English",
     //  "",
   ];
 
@@ -48,8 +55,8 @@ import {
     let pages = 0;
 
     while (true) {
-      if (pages > 50) {
-        console.log("🛑 Reached 20 page limit. Exiting loop.");
+      if (pages > 10) {
+        console.log("🛑 Reached 10 page limit. Exiting loop.");
         break;
       }
 

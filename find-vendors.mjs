@@ -30,29 +30,53 @@ const findVendorsInMultipleCards = (allListings) => {
 
 const valueFinder = (allListings) => {
   const cardsToMatch = allListings.length;
-  let vendorsWithTotals = [];
 
-  for (let count = cardsToMatch; count > 0; count--) {
-    vendorsWithTotals = findVendorsInMultipleCards(allListings)
-      .filter((vendor) => vendor.cards.length >= count)
-      .map((vendor) => ({
-        ...vendor,
-        totalPrice: vendor.prices.reduce((sum, price) => sum + price, 0),
-      }));
+  const allVendors = findVendorsInMultipleCards(allListings).map((vendor) => {
+    const totalPrice = vendor.prices.reduce((sum, price) => sum + price, 0);
+    const averagePrice = totalPrice / vendor.cards.length;
+    return {
+      ...vendor,
+      totalPrice,
+      averagePrice,
+    };
+  });
 
-    if (vendorsWithTotals.length > 0) break;
-  }
+  // Sort by: most cards matched (desc), then lowest average price (asc)
+  allVendors.sort((a, b) => {
+    if (b.cards.length !== a.cards.length) {
+      return b.cards.length - a.cards.length; // prioritize more matches
+    }
+    return a.averagePrice - b.averagePrice; // then cheaper average
+  });
 
-  vendorsWithTotals.sort((a, b) => a.totalPrice - b.totalPrice);
+  const top5AffordableVendors = allVendors.slice(0, 20);
 
-  const top5AffordableVendors = vendorsWithTotals.slice(0, 5);
+  top5AffordableVendors.forEach((vendor, index) => {
+    console.log(
+      `#${index + 1}: ${vendor.seller} - ${
+        vendor.cards.length
+      } cards - $${vendor.totalPrice.toFixed(
+        2
+      )} total - $${vendor.averagePrice.toFixed(2)} avg/card`
+    );
+  });
 
-  console.log(
-    "Most affordable vendors for these items:",
-    top5AffordableVendors
-  );
+  top5AffordableVendors.forEach((vendor, index) => {
+    console.log(
+      `\n#${index + 1}: ${vendor.seller} - ${
+        vendor.cards.length
+      } cards - $${vendor.totalPrice.toFixed(
+        2
+      )} total - $${vendor.averagePrice.toFixed(2)} avg/card`
+    );
+
+    vendor.cards.forEach((cardName, i) => {
+      const cardPrice = vendor.prices[i];
+      console.log(`   - ${cardName}: $${cardPrice.toFixed(2)}`);
+    });
+  });
+
   return top5AffordableVendors;
 };
 
-// Call the function
 valueFinder(allListings);
