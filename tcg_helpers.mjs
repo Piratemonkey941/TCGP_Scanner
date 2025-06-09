@@ -1,11 +1,17 @@
 import fs from "fs";
 
 export const searchedForFileName = (pkmn) => {
-  return pkmn.split("-").slice(4).join("-");
+  console.log("pkmn", pkmn);
+
+  if (pkmn.includes("-")) {
+    return pkmn.split("-").slice(4).join("-");
+  }
+  return pkmn;
 };
 
 export function saveSellerMapEntries(searchedForFileName, allListings) {
-  console.log("ALL LISTINGS: ", allListings, allListings.length); // hit here from main function
+  // console.log("ALL LISTINGS: ", allListings, allListings.length); // hit here from main function
+  console.log("searchedForFileName: ", searchedForFileName); // hit here from main function
   fs.writeFile(
     `sellerMapEntrees_${searchedForFileName}.json`,
     JSON.stringify(allListings, null, 2),
