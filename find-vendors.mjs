@@ -1,9 +1,12 @@
-import { allListings } from "./allListings.mjs";
+import { allListings } from "./joined.mjs";
 
 const vendorArg = process.argv[2];
+const avgAmountPerCard = [];
 
 const findVendorsInMultipleCards = (allListings) => {
   const sellerMap = {};
+  const cardPriceMap = {};
+
   allListings.forEach((cardListings) => {
     cardListings.forEach(({ seller, pokemonValue, price }) => {
       if (!sellerMap[seller]) {
@@ -13,12 +16,33 @@ const findVendorsInMultipleCards = (allListings) => {
         };
       }
 
+      const cleanPrice =
+        parseFloat(price?.startsWith("$") ? price.slice(1) : price) || 0;
+
+      // Track prices per card
+      if (!cardPriceMap[pokemonValue]) {
+        cardPriceMap[pokemonValue] = [];
+      }
+      cardPriceMap[pokemonValue].push(cleanPrice);
+
+      // Track seller info
+      if (!sellerMap[seller]) {
+        sellerMap[seller] = {
+          cards: new Set(),
+          prices: [],
+        };
+      }
+
       sellerMap[seller].cards.add(pokemonValue);
-      sellerMap[seller].prices.push(
-        parseFloat(price?.startsWith("$") ? price.slice(1) : price) || 0
-      );
+      sellerMap[seller].prices.push(cleanPrice);
     });
   });
+
+  // After processing all listings, calculate avg per card
+  for (const [pokemon, prices] of Object.entries(cardPriceMap)) {
+    const avg = prices.reduce((sum, val) => sum + val, 0) / prices.length;
+    avgAmountPerCard.push({ pokemon, avgCost: avg });
+  }
 
   return Object.entries(sellerMap)
     .map(([seller, data]) => ({
@@ -53,7 +77,7 @@ const valueFinder = (allListings, vendorArg) => {
       }
       return a.averagePrice - b.averagePrice; // then cheaper average
     });
-    console.log("filteredVendors", allVendors);
+
     const top5AffordableVendors = allVendors.slice(0, 20);
 
     top5AffordableVendors.forEach((vendor, index) => {
@@ -81,6 +105,12 @@ const valueFinder = (allListings, vendorArg) => {
       });
     });
 
+    console.log("\n\nAverage price per card:");
+    avgAmountPerCard
+      .sort((a, b) => b.avgCost - a.avgCost) // optional: priciest first
+      .forEach(({ pokemon, avgCost }) => {
+        console.log(` - ${pokemon}: $${avgCost.toFixed(2)}`);
+      });
     return top5AffordableVendors;
   }
 };
