@@ -116,5 +116,3 @@ const valueFinder = (allListings, vendorArg) => {
 };
 
 valueFinder(allListings, vendorArg);
-
-// find most expensive cards first then check them for other options
