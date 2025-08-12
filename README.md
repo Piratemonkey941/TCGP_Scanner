@@ -2,6 +2,7 @@ This is an app that is meant to be a more effective version of TCG Players Cart 
 and appears to have built in biases
 
 (Devs this part isnt for you)
+
 1 - It is currently not in the most user friendly format and will require you to have some sort of IDE. 
 VSCode is recomended - https://code.visualstudio.com/download
 
@@ -13,6 +14,7 @@ https://nodejs.org/en
 4 -  Now once the app is added to your machine locally run `npm i` in the folder containing the app via your terminal
 
 (Devs Start Here)
+
 5 - Now the fun can start in cards_wishlist.mjs you can start adding the urls of the cards you wanting to purchase
 
 6 - After you have added all the cards you can now run the first part of the app. Run `node tcgp_scraper.mjs` 
