@@ -78,7 +78,7 @@ const valueFinder = (allListings, vendorArg) => {
       return a.averagePrice - b.averagePrice; // then cheaper average
     });
 
-    const top5AffordableVendors = allVendors.slice(0, 20);
+    const top5AffordableVendors = allVendors.slice(0, 10);
 
     top5AffordableVendors.forEach((vendor, index) => {
       console.log(

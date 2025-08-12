@@ -13,7 +13,7 @@ export function saveSellerMapEntries(searchedForFileName, allListings) {
   // console.log("ALL LISTINGS: ", allListings, allListings.length); // hit here from main function
   console.log("searchedForFileName: ", searchedForFileName); // hit here from main function
   fs.writeFile(
-    `sellerMapEntrees_${searchedForFileName}.json`,
+    `scraped_to_join/sellerMapEntrees_${searchedForFileName}.json`,
     JSON.stringify(allListings, null, 2),
     (err) => {
       if (err) {
